@@ -1,0 +1,32 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "workers-integration",
+    "main": "src/index.ts",
+    "compatibility_date": "2026-06-04",
+    "durable_objects": {
+        "bindings": [
+            {
+                "name": "DO",
+                "class_name": "RemcoKvJsonRpc"
+            }
+        ]
+    },
+    "migrations": [
+        {
+            "tag": "v1",
+            "new_sqlite_classes": [
+                "RemcoKvJsonRpc"
+            ]
+        }
+    ],
+    "kv_namespaces": [
+        {
+            "binding": "KV",
+            "id": "demo"
+        }
+    ]
+}

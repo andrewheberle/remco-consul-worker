@@ -1,0 +1,8 @@
+github.com/HeavyHorst/easykv v1.2.13 h1:srFAlSL7VEndWoWOgHQRprgcyVFUdU7SFPXJzP4s01U=
+github.com/HeavyHorst/easykv v1.2.13/go.mod h1:vvnE5SOoADiB9LrlA3oDOWDto7DUord7D5TEJql6nDY=
+github.com/coder/websocket v1.8.14 h1:9L0p0iKiNOibykf283eHkKUHHrpG7f65OE3BhhO7v9g=
+github.com/coder/websocket v1.8.14/go.mod h1:NX3SzP+inril6yawo5CQXx8+fk145lPDC6pumgx0mVg=
+github.com/natefinch/pie v0.0.0-20170715172608-9a0d72014007 h1:Ohgj9L0EYOgXxkDp+bczlMBiulwmqYzQpvQNUdtt3oc=
+github.com/natefinch/pie v0.0.0-20170715172608-9a0d72014007/go.mod h1:wKCOWMb6iNlvKiOToY2cNuaovSXvIiv1zDi9QDR7aGQ=
+github.com/spf13/pflag v1.0.10 h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=
+github.com/spf13/pflag v1.0.10/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
