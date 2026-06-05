@@ -1,12 +1,12 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "consul-kv-worker",
+    "name": "consul-worker",
     "main": "src/index.ts",
     "compatibility_date": "2026-06-04",
     "kv_namespaces": [
         {
             "binding": "KV",
-            "id": "consul-kv"
+            "id": "consul"
         }
     ]
 }

@@ -1,4 +1,5 @@
 {
+	"name": "remco-consul-worker",
 	"private": true,
 	"version": "0.1.1",
 	"workspaces": [
