@@ -6,7 +6,7 @@
     "kv_namespaces": [
         {
             "binding": "KV",
-            "id": "demo"
+            "id": "consul-kv"
         }
     ]
 }
