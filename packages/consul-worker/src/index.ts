@@ -1,3 +1,3 @@
-import { app } from "@andrewheberle/remco-consul-workers"
+import { app } from "@andrewheberle/remco-consul-worker"
 
 export default app
