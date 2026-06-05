@@ -24,14 +24,14 @@
 	"release-it": {
 		"git": {
 			"requiredBranch": "main",
-			"commitMessage": "chore(release): @andrewheberle/remco-consul-worker@v${version}",
-			"tagName": "@andrewheberle/remco-consul-worker@v${version}",
+			"commitMessage": "chore(release): v${version}",
+			"tagName": "v${version}",
 			"requireCleanWorkingDir": false
 		},
 		"github": {
 			"autoGenerate": true,
 			"release": true,
-			"releaseName": "@andrewheberle/remco-consul-worker@v${version}"
+			"releaseName": "v${version}"
 		},
 		"hooks": {
 			"after:bump": "npx auto-changelog -p"
