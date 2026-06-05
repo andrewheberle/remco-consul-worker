@@ -38,11 +38,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/andrewheberle/remco-websocket.git"
+		"url": "git+https://github.com/andrewheberle/remco-consul-workers.git"
 	},
-	"homepage": "https://github.com/andrewheberle/remco-websocket#readme",
+	"homepage": "https://github.com/andrewheberle/remco-consul-workers#readme",
 	"bugs": {
-		"url": "https://github.com/andrewheberle/remco-websocket/issues"
+		"url": "https://github.com/andrewheberle/remco-consul-workers/issues"
 	},
 	"author": "Andrew Heberle",
 	"license": "Apache-2.0",

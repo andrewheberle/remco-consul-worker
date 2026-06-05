@@ -8,7 +8,7 @@ app.get("/v1/kv/:key{.+}", async (c) => {
     const key = c.req.param("key")
     const recurse = c.req.query("recurse") !== undefined
 
-    const kv = await list(c.env, `/${key}`, recurse)
+    const kv = await list(c.env.KV, `/${key}`, recurse)
 
     if (kv.length === 0) {
         return c.notFound() 

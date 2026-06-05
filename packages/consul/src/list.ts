@@ -1,13 +1,49 @@
-import { EnvBindings, KVPair } from "./types"
-import { list as kvList } from "./kv"
-import { list as r2List } from "./r2"
+import { KVPair } from "./types"
 
-export const list = async (env: EnvBindings, prefix: string, recurse?: boolean): Promise <KVPair[]> => {
-    if (env.KV !== undefined)
-        return await kvList(env.KV, prefix, recurse)
+export const list = async (KV: KVNamespace, prefix: string, recurse?: boolean): Promise<KVPair[]> => {
+    if (!prefix.startsWith("/")) {
+        prefix = `/${prefix}`
+    }
 
-    if (env.R2 !== undefined)
-        return await r2List(env.R2, prefix, recurse)
+    if (recurse) {
+        const list = await KV.list({ prefix: prefix })
 
-    throw new Error("no backend store available")
+        const keyList = list.keys
+            .filter((v) => {
+                // exact match is ok
+                if (v.name === prefix)
+                    return v
+
+
+                // match with seperator next is ok
+                if (v.name.slice(prefix.length).startsWith("/"))
+                    return v
+            })
+            .map((v) => v.name)
+        if (keyList.length === 0) {
+            return []
+        }
+
+        const v = await KV.get(keyList)
+        if (v === null) {
+            return []
+        }
+
+        const res: KVPair[] = []
+        v.forEach((v, k) => {
+            if (v === null) return
+
+            res.push(new KVPair(k, v))
+        })
+
+        return res
+    }
+
+    const v = await KV.get(prefix)
+    if (v === null) {
+        return []
+    }
+
+    return [new KVPair(prefix, v)]
 }
+

@@ -1,6 +1,5 @@
 export interface EnvBindings {
-    KV?: KVNamespace
-    R2?: R2Bucket
+    KV: KVNamespace
 }
 
 export class KVPair {

@@ -2,11 +2,8 @@
 	"private": true,
 	"version": "0.0.0",
 	"workspaces": [
-		"packages/kv-rpc",
-        "packages/kv-rpc-worker",
         "packages/consul",
-        "packages/consul-kv-worker",
-        "packages/consul-r2-worker"
+        "packages/consul-worker"
 	],
 	"scripts": {
 		"build": "npm run build --workspaces --if-present",
@@ -27,14 +24,14 @@
 	"release-it": {
 		"git": {
 			"requiredBranch": "main",
-			"commitMessage": "chore(release): @andrewheberle/remco-kv-json-rpc@v${version}",
-			"tagName": "@andrewheberle/remco-kv-json-rpc@v${version}",
+			"commitMessage": "chore(release): @andrewheberle/remco-consul-workers@v${version}",
+			"tagName": "@andrewheberle/remco-consul-workers@v${version}",
 			"requireCleanWorkingDir": false
 		},
 		"github": {
 			"autoGenerate": true,
 			"release": true,
-			"releaseName": "@andrewheberle/remco-kv-json-rpc@v${version}"
+			"releaseName": "@andrewheberle/remco-consul-workers@v${version}"
 		},
 		"hooks": {
 			"after:bump": "npx auto-changelog -p"
