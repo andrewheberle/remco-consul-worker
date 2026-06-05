@@ -1,5 +1,5 @@
 {
-	"name": "consul-kv-worker",
+	"name": "consul-worker",
 	"private": true,
 	"cloudflare": {
 		"bindings": {
