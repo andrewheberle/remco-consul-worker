@@ -1,10 +1,5 @@
 import { RpcError } from "typed-rpc"
-import { EnvBindings } from "./types"
-
-type EasyKvWatchOption = {
-    keys: string[]
-    waitIndex: number
-}
+import { EasyKvWatchOption, EnvBindings } from "./types"
 
 export class rpcServer {
     private kv?: KVNamespace

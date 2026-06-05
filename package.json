@@ -3,7 +3,10 @@
 	"version": "0.0.0",
 	"workspaces": [
 		"packages/kv-rpc",
-        "packages/workers-integration"
+        "packages/kv-rpc-worker",
+        "packages/consul",
+        "packages/consul-kv-worker",
+        "packages/consul-r2-worker"
 	],
 	"scripts": {
 		"build": "npm run build --workspaces --if-present",

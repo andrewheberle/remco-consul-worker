@@ -1,0 +1,22 @@
+{
+	"name": "consul-kv-worker",
+	"private": true,
+	"scripts": {
+		"cf-typegen": "wrangler types",
+		"dev": "wrangler dev",
+		"schema": "chanfana",
+		"test:workers": "vitest run"
+	},
+	"dependencies": {
+		"@andrewheberle/remco-consul-workers": "*"
+	},
+	"devDependencies": {
+		"wrangler": "^4.95.0"
+	},
+	"release-it": {
+		"git": false,
+		"npm": {
+			"publish": false
+		}
+	}
+}
