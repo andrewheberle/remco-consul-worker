@@ -2,5 +2,13 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+   {
+      "groupName": "Hono",
+      "groupSlug": "hono",
+      "matchPackageNames": ["hono", "honox"],
+      "matchPackagePrefixes": ["@hono"]
+    }
   ]
 }
