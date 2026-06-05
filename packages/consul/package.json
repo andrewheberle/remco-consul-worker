@@ -49,7 +49,11 @@
 	"release-it": {
 		"git": false,
 		"npm": {
-			"publish": true
+			"publish": true,
+			"skipChecks": true
 		}
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
