@@ -39,8 +39,5 @@
 	},
 	"npm": {
 		"publish": false
-	},
-	"dependencies": {
-		
 	}
 }
