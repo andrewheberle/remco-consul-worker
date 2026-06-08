@@ -1,5 +1,10 @@
+import { decrypt, ProtectedPrefix } from "./protect"
+
 export interface EnvBindings {
     KV: KVNamespace
+    DB?: D1Database
+    CACHE_TTL?: string
+    KEY?: SecretsStoreSecret
 }
 
 export class KVPair {
@@ -9,6 +14,25 @@ export class KVPair {
     constructor(key: string, value: string) {
         this.key = key
         this.value = value
+    }
+
+    /**
+     * 
+     * @returns A decrypted version of the KVPair
+     */
+    async decrypt(key: CryptoKey): Promise<KVPair> {
+        // skip unprotected keys
+        if (!this.value.startsWith(ProtectedPrefix)) {
+            return this
+        }
+
+        let v = this.value
+
+        // remove prefix then decrypt
+        v = v.slice(ProtectedPrefix.length)
+        v = await decrypt(key, v)
+        
+        return new KVPair(this.key, v)
     }
 
     /**
