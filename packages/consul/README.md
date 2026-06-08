@@ -100,6 +100,16 @@ certificate.
     npm run cf-typegen
     ```
 
+## Deployment
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fandrewheberle%2Fremco-consul-worker-template)
+
+The simplest option is to use the Deploy to Cloudflare button above.
+
+Please review the template respository here for further information:
+
+https://github.com/andrewheberle/remco-consul-worker-template
+
 ## Usage
 
 After deployment please follow the remco documentation and use this in place
