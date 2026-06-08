@@ -1,5 +1,10 @@
-export const ProtectedPrefix = "$protected$:"
+export const ProtectedPrefix = "$protected$"
 
+/**
+ * 
+ * @param s a base64 encoded string that is 32-bytes long before base64 encoding
+ * @returns a CryptoKey that can be used for encryption and decryption
+ */
 export const keyFromString = async (s: string): Promise<CryptoKey> => {
     const keyBytes = Uint8Array.from(atob(s), (c) => c.charCodeAt(0))
     return await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, [
