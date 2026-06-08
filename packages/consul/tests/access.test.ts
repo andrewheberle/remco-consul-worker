@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { canAccess } from "../src/list"
+import { canAccess } from "../src/access"
 
 describe("canAccess", () => {
     it("no access", () => {
