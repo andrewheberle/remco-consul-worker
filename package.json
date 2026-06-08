@@ -1,7 +1,7 @@
 {
 	"name": "remco-consul-worker",
 	"private": true,
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"workspaces": [
 		"packages/consul",
 		"packages/consul-worker"
