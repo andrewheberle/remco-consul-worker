@@ -28,7 +28,9 @@
 	},
 	"dependencies": {
 		"@cloudflare/workers-types": "^4.20260528.1",
-		"hono": "^4.10.6"
+		"hono": "^4.10.6",
+		"itty-time": "^2.0.2",
+		"workers-qb": "^1.14.0"
 	},
 	"devDependencies": {
 		"@vitest/coverage-v8": "^4.1.7",

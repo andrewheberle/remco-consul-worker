@@ -20,6 +20,5 @@ Cloudflare Workers KV.
 
 ## Usage
 
-After deployment pleasae follow the remco documentation and use this in place
+After deployment please follow the remco documentation and use this in place
 of the Consul backend.
-
