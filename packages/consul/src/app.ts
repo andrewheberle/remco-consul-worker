@@ -1,8 +1,9 @@
 import { Hono } from "hono"
 import type { EnvBindings } from "./types"
-import { canAccess, fetchAccessControls, list } from "./list"
+import { list } from "./list"
 import { connect } from "./db"
 import { encrypt, keyFromString } from "./protect"
+import { canAccess, fetchAccessControls } from "./access"
 
 export const app = new Hono<{ Bindings: EnvBindings }>()
 
