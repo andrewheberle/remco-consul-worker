@@ -2,7 +2,9 @@ import { Hono } from "hono"
 import type { EnvBindings } from "./types"
 import { canAccess, fetchAccessControls, list } from "./list"
 import { connect } from "./db"
-import { keyFromString } from "./protect"
+import { encrypt, keyFromString } from "./protect"
+import * as z from "zod"
+import { validator } from "hono/validator"
 
 export const app = new Hono<{ Bindings: EnvBindings }>()
 
@@ -19,7 +21,7 @@ app.get("/v1/kv/:key{.+}", async (c) => {
     if (c.req.raw.cf !== undefined) {
         const auth = c.req.raw.cf.tlsClientAuth as IncomingRequestCfPropertiesTLSClientAuth | IncomingRequestCfPropertiesTLSClientAuthPlaceholder
         if (auth.certPresented === "1") {
-        
+
             let cn = ""
             for (const v of auth.certSubjectDN.split(",")) {
                 if (v.startsWith("CN=")) {
@@ -56,3 +58,32 @@ app.get("/v1/kv/:key{.+}", async (c) => {
 
     return c.json(kv)
 })
+
+const protectSchema = z.object({
+    body: z.object({
+        plaintext: z.string()
+    })
+})
+
+app.post("/api/v1/protect",
+    validator("form", (value, c) => {
+        const parsed = protectSchema.safeParse(value)
+        if (!parsed.success) {
+            return c.json({ message: "parse error" }, 400)
+        }
+
+        return parsed.data
+    }),
+    async (c) => {
+        const { body } = c.req.valid("form")
+
+        if (c.env.KEY === undefined) {
+            return c.json({ message: "unable to handle request" }, 503)
+        }
+
+        const keyString = await c.env.KEY.get()
+        const key = await keyFromString(keyString)
+        const v = await encrypt(key, body.plaintext)
+
+        return c.json({ ciphertext: v })
+    })
