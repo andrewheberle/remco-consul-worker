@@ -7,8 +7,7 @@
    {
       "groupName": "Hono",
       "groupSlug": "hono",
-      "matchPackageNames": ["hono", "honox"],
-      "matchPackagePrefixes": ["@hono"]
+      "matchPackageNames": ["hono", "honox", "@hono{/,}**"]
     }
   ]
 }
