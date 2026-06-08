@@ -3,8 +3,6 @@ import type { EnvBindings } from "./types"
 import { canAccess, fetchAccessControls, list } from "./list"
 import { connect } from "./db"
 import { encrypt, keyFromString } from "./protect"
-import * as z from "zod"
-import { validator } from "hono/validator"
 
 export const app = new Hono<{ Bindings: EnvBindings }>()
 
@@ -59,23 +57,17 @@ app.get("/v1/kv/:key{.+}", async (c) => {
     return c.json(kv)
 })
 
-const protectSchema = z.object({
-    body: z.object({
-        plaintext: z.string()
-    })
-})
+type protectBody = {
+    plaintext: string
+}
 
 app.post("/api/v1/protect",
-    validator("form", (value, c) => {
-        const parsed = protectSchema.safeParse(value)
-        if (!parsed.success) {
+    async (c) => {
+        const json: protectBody = await c.req.json()
+
+        if (json.plaintext === undefined || typeof json.plaintext !== "string" ) {
             return c.json({ message: "parse error" }, 400)
         }
-
-        return parsed.data
-    }),
-    async (c) => {
-        const { body } = c.req.valid("form")
 
         if (c.env.KEY === undefined) {
             return c.json({ message: "unable to handle request" }, 503)
@@ -83,7 +75,7 @@ app.post("/api/v1/protect",
 
         const keyString = await c.env.KEY.get()
         const key = await keyFromString(keyString)
-        const v = await encrypt(key, body.plaintext)
+        const v = await encrypt(key, json.plaintext)
 
         return c.json({ ciphertext: v })
     })

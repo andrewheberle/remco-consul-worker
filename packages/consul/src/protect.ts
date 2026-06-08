@@ -1,4 +1,4 @@
-export const ProtectedPrefix = "$protected$"
+export const ProtectedPrefix = "$protected$:"
 
 /**
  * 
