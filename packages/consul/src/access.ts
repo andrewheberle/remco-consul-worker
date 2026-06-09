@@ -6,7 +6,7 @@ export class AccessController {
     private env: EnvBindings
     private user: string
     private ttl: number
-    private _access?: string[]
+    private _accessList?: string[]
 
     constructor(env: EnvBindings, user: string = "*", ttl: number = seconds("5 minutes")) {
         this.env = env
@@ -15,19 +15,20 @@ export class AccessController {
     }
 
     async canAccess(key: string): Promise<boolean> {
-        return canAccess(await this.access(), key)
+        const accessList = await this.accessList()
+        return canAccess(accessList, key)
     }
 
-    private async access(): Promise<string[]> {
-        if (this._access !== undefined) {
-            return this._access
+    private async accessList(): Promise<string[]> {
+        if (this._accessList !== undefined) {
+            return this._accessList
         }
 
         // if theres no database then return full access
         if (this.env.DB === undefined) {
-            this._access = ["/*"]
+            this._accessList = ["/*"]
 
-            return this._access
+            return this._accessList
         }
 
         // check for cached response
@@ -35,9 +36,9 @@ export class AccessController {
         if (this.ttl !== 0) {
             const cached = await this.env.KV.get<string[]>(cacheKey, "json")
             if (cached !== null) {
-                this._access = cached
+                this._accessList = cached
 
-                return this._access
+                return this._accessList
             }
         }
 
@@ -59,28 +60,28 @@ export class AccessController {
 
         if (res.results === undefined) {
             // no results is no access
-            this._access = []
+            this._accessList = []
             await this.cache()
 
-            return this._access
+            return this._accessList
         }
 
-        this._access = res.results.map((v) => v.prefix)
+        this._accessList = res.results.map((v) => v.prefix)
         await this.cache()
 
-        return this._access
+        return this._accessList
     }
 
     private async cache() {
         // dont cache when undefined
-        if (this._access === undefined) {
+        if (this._accessList === undefined) {
             return
         }
 
         // cache for later if ttl was not zero
         if (this.ttl !== 0) {
             const cacheKey = `${this.user}:access`
-            await this.env.KV.put(cacheKey, JSON.stringify(this._access), { expirationTtl: this.ttl })
+            await this.env.KV.put(cacheKey, JSON.stringify(this._accessList), { expirationTtl: this.ttl })
         }
     }
 }
