@@ -1,6 +1,6 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "consul-worker-db",
+    "name": "consul-worker-all",
     "main": "src/index.ts",
     "compatibility_date": "2026-06-04",
     "vars": {
@@ -13,13 +13,13 @@
             "database_id": "00000000-0000-0000-90000688-000000000000"
         }
     ],
-    /* "secrets_store_secrets": [
+    "secrets_store_secrets": [
         {
             "binding": "KEY",
             "secret_name": "consul-key",
             "store_id": "000000000000"
         }
-    ], */
+    ],
     "kv_namespaces": [
         {
             "binding": "KV",
