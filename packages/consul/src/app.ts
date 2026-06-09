@@ -2,7 +2,7 @@ import { Hono } from "hono"
 import type { EnvBindings } from "./types"
 import { list } from "./list"
 import { encrypt, keyFromString } from "./protect"
-import { AccessController, userFromRequest } from "./access"
+import { canAccess, fetchAccess, userFromRequest } from "./access"
 import { seconds } from "itty-time"
 import { logger } from "./logger"
 
@@ -28,9 +28,16 @@ app.get("/v1/kv/:key{.+}", async (c) => {
 
     ll.debug(`${c.req.method} ${c.req.path}: filtering key list`)
 
+    /*
     const access = new AccessController(c.env, user, ttl)
     const filtered = kv.filter(async (v) => {
         if (await access.canAccess(v.key)) {
+            return v
+        }
+    }) */
+    const access = await fetchAccess(c.env, user, ttl)
+    const filtered = kv.filter(async (v) => {
+        if (canAccess(access, v.key)) {
             return v
         }
     })
