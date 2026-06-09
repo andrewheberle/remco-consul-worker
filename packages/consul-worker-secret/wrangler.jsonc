@@ -1,10 +1,12 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "consul-worker",
+    "name": "consul-worker-secret",
     "main": "src/index.ts",
     "compatibility_date": "2026-06-04",
-    /*
-    "d1_databases": [
+    "vars": {
+        "LOG_LEVEL": "debug"
+    },
+    /* "d1_databases": [
         {
             "binding": "DB",
             "database_name": "consul-db",

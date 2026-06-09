@@ -5,6 +5,8 @@
 	"workspaces": [
 		"packages/consul",
 		"packages/consul-worker",
+		"packages/consul-worker-all",
+		"packages/consul-worker-db",
 		"packages/consul-worker-secret"
 	],
 	"scripts": {
