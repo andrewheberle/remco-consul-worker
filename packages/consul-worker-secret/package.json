@@ -1,13 +1,6 @@
 {
 	"name": "consul-worker-secret",
 	"private": true,
-	"cloudflare": {
-		"bindings": {
-			"KV": {
-				"decription": "The Workers KV namespace to use for storing Key/Value data"
-			}
-		}
-	},
 	"scripts": {
 		"cf-typegen": "wrangler types",
 		"dev": "wrangler dev",

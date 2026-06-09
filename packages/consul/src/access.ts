@@ -46,6 +46,7 @@ export class AccessController {
 
         // check for cached response
         const cacheKey = `${this.user}:access`
+        this.logger.debug("access(): checking for previously cached response", "cacheKey", cacheKey)
         if (this.ttl !== 0) {
             const cached = await this.env.KV.get<string[]>(cacheKey, "json")
             if (cached !== null) {
@@ -56,6 +57,8 @@ export class AccessController {
                 return this._access
             }
         }
+
+        this.logger.debug("access(): no cached response so looking up from database", "cacheKey", cacheKey)
 
         // pull from database
         const qb = await connect(this.env)
@@ -70,6 +73,7 @@ export class AccessController {
             .execute()
 
         if (!res.success) {
+            this.logger.error("access(): query failed")
             throw Error("query failed")
         }
 

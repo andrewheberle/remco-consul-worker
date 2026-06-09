@@ -15,12 +15,19 @@ export const connect = async (env: EnvBindings): Promise<D1QB<Schema>> => {
     if (env.DB === undefined) {
         throw new Error("DB was undefined")
     }
+    
+    const l = logger(env)
+    
+    try {
+        const qb = new D1QB<Schema>(env.DB)
+        const migrationBuilder = qb.migrations({ migrations })
+        const applied = await migrationBuilder.apply()
 
-    const qb = new D1QB<Schema>(env.DB)
-	const migrationBuilder = qb.migrations({ migrations })
-	const applied = await migrationBuilder.apply()
+        l.debug("connect(): connected and applied migrations", "applied", applied.length, "total", migrations.length)
 
-    logger(env).debug("connect(): connected and applied migrations", "applied", applied.length, "total", migrations.length)
-
-    return qb
+        return qb
+    } catch (err) {
+        l.error("connect(): error during connect and migration process", "error", err)
+        throw err
+    }
 }

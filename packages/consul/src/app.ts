@@ -14,7 +14,7 @@ app.get("/v1/kv/:key{.+}", async (c) => {
     const l = logger(c.env).with("key", key, "recurse", recurse)
 
     // fetch from KV
-    l.debug("fetching keys")
+    l.debug(`${c.req.method} ${c.req.path}: fetching keys`)
     const kv = await list(c.env, `/${key}`, recurse)
     if (kv.length === 0) {
         l.debug("no results found")
@@ -26,7 +26,7 @@ app.get("/v1/kv/:key{.+}", async (c) => {
     const ttl = c.env.CACHE_TTL !== undefined ? seconds(c.env.CACHE_TTL) : undefined
     const ll = l.with("user", user, "ttl", ttl)
 
-    ll.debug("filtering key list")
+    ll.debug(`${c.req.method} ${c.req.path}: filtering key list`)
 
     const access = new AccessController(c.env, user, ttl)
     const filtered = kv.filter(async (v) => {
@@ -35,7 +35,7 @@ app.get("/v1/kv/:key{.+}", async (c) => {
         }
     })
     if (filtered.length === 0) {
-        ll.debug("no keys left after filtering")
+        ll.debug(`${c.req.method} ${c.req.path}: no keys left after filtering`)
 
         return c.notFound()
     }
@@ -46,12 +46,12 @@ app.get("/v1/kv/:key{.+}", async (c) => {
         const key = await keyFromString(keyString)
         const decrypted = await Promise.all(filtered.map(v => v.decrypt(key)))
 
-        ll.debug("returning keys after filtering and decryption process", "length", decrypted.length)
+        ll.debug(`${c.req.method} ${c.req.path}: returning keys after filtering and decryption process`, "length", decrypted.length)
 
         return c.json(decrypted)
     }
 
-    ll.debug("returning keys after filtering process", "length", filtered.length)
+    ll.debug(`${c.req.method} ${c.req.path}: returning keys after filtering process`, "length", filtered.length)
 
     return c.json(filtered)
 })
