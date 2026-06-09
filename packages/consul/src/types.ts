@@ -1,10 +1,11 @@
 import { decrypt, ProtectedPrefix } from "./protect"
 
 export interface EnvBindings {
-    KV: KVNamespace
-    DB?: D1Database
     CACHE_TTL?: string
+    DB?: D1Database
+    LOG_LEVEL?: string
     KEY?: SecretsStoreSecret
+    KV: KVNamespace
 }
 
 export class KVPair {

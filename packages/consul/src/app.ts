@@ -4,22 +4,29 @@ import { list } from "./list"
 import { encrypt, keyFromString } from "./protect"
 import { AccessController, userFromRequest } from "./access"
 import { seconds } from "itty-time"
+import { logger } from "./logger"
 
 export const app = new Hono<{ Bindings: EnvBindings }>()
 
 app.get("/v1/kv/:key{.+}", async (c) => {
     const key = c.req.param("key")
     const recurse = c.req.query("recurse") !== undefined
+    const l = logger(c.env).with("key", key, "recurse", recurse)
 
     // fetch from KV
-    const kv = await list(c.env.KV, `/${key}`, recurse)
+    l.debug("fetching keys")
+    const kv = await list(c.env, `/${key}`, recurse)
     if (kv.length === 0) {
+        l.debug("no results found")
         return c.notFound()
     }
 
     // filter based on access controls (if present)
     const user = userFromRequest(c.req.raw)
     const ttl = c.env.CACHE_TTL !== undefined ? seconds(c.env.CACHE_TTL) : undefined
+    const ll = l.with("user", user, "ttl", ttl)
+
+    ll.debug("filtering key list")
 
     const access = new AccessController(c.env, user, ttl)
     const filtered = kv.filter(async (v) => {
@@ -28,6 +35,8 @@ app.get("/v1/kv/:key{.+}", async (c) => {
         }
     })
     if (filtered.length === 0) {
+        ll.debug("no keys left after filtering")
+
         return c.notFound()
     }
 
@@ -37,8 +46,12 @@ app.get("/v1/kv/:key{.+}", async (c) => {
         const key = await keyFromString(keyString)
         const decrypted = await Promise.all(filtered.map(v => v.decrypt(key)))
 
+        ll.debug("returning keys after filtering and decryption process", "length", decrypted.length)
+
         return c.json(decrypted)
     }
+
+    ll.debug("returning keys after filtering process", "length", filtered.length)
 
     return c.json(filtered)
 })
