@@ -19,12 +19,13 @@
 	"scripts": {
 		"build": "tsc",
 		"coverage": "vitest run --coverage",
-		"test": "vitest run",
-		"test:watch": "vitest",
+		"lint": "eslint",
 		"prepublishOnly": "npm run build",
 		"release": "release-it",
 		"release:ci": "release-it --ci",
-		"release:dryrun": "release-it --dry-run"
+		"release:dryrun": "release-it --dry-run",
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"dependencies": {
 		"@cloudflare/workers-types": "^4.20260528.1",
@@ -33,9 +34,13 @@
 		"workers-qb": "^1.14.0"
 	},
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
 		"@vitest/coverage-v8": "^4.1.7",
+		"eslint": "^10.4.1",
+		"globals": "^17.6.0",
 		"tsx": "^4.21.0",
 		"typescript": "^6.0.0",
+		"typescript-eslint": "^8.61.0",
 		"vitest": "^4.1.7"
 	},
 	"repository": {

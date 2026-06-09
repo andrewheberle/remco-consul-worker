@@ -1,7 +1,4 @@
-import { D1QB } from "workers-qb"
 import { KVPair } from "./types"
-import { Schema } from "./db"
-import { seconds } from "itty-time"
 
 export const list = async (KV: KVNamespace, prefix: string, recurse?: boolean): Promise<KVPair[]> => {
     if (!prefix.startsWith("/")) {
