@@ -58,7 +58,7 @@ export class AccessController {
         }
 
         // pull from database
-        const qb = await connect(this.env.DB)
+        const qb = await connect(this.env)
         const where = this.user === "*"
             ? { conditions: "user = '*'" }
             : { conditions: "user = ? OR user = '*'", params: this.user }
