@@ -1,12 +1,16 @@
-import { KVPair } from "./types"
+import { logger } from "./logger"
+import { EnvBindings, KVPair } from "./types"
 
-export const list = async (KV: KVNamespace, prefix: string, recurse?: boolean): Promise<KVPair[]> => {
+export const list = async (env: EnvBindings, prefix: string, recurse?: boolean): Promise<KVPair[]> => {
     if (!prefix.startsWith("/")) {
         prefix = `/${prefix}`
     }
 
+    const l = logger(env).with("prefix", prefix, "recurse", recurse)
+
     if (recurse) {
-        const list = await KV.list({ prefix: prefix })
+        l.debug("list(): handling recursive lookup")
+        const list = await env.KV.list({ prefix: prefix })
 
         const keyList = list.keys
             .filter((v) => {
@@ -24,7 +28,7 @@ export const list = async (KV: KVNamespace, prefix: string, recurse?: boolean): 
             return []
         }
 
-        const v = await KV.get(keyList)
+        const v = await env.KV.get(keyList)
         if (v === null) {
             return []
         }
@@ -39,7 +43,9 @@ export const list = async (KV: KVNamespace, prefix: string, recurse?: boolean): 
         return res
     }
 
-    const v = await KV.get(prefix)
+    l.debug("list(): handling individual prefix lookup")
+
+    const v = await env.KV.get(prefix)
     if (v === null) {
         return []
     }
