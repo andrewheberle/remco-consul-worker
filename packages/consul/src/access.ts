@@ -10,11 +10,13 @@ export const fetchAccessControls = async (KV: KVNamespace, DB: D1QB<Schema> | un
 
     // check for cached response
     const cacheKey = `${user}:access`
-    const cached = await KV.get(cacheKey)
-    if (cached !== null) {
-        const access: string[] = JSON.parse(cached)
+    if (ttl !== 0) {
+        const cached = await KV.get(cacheKey)
+        if (cached !== null) {
+            const access: string[] = JSON.parse(cached)
 
-        return access
+            return access
+        }
     }
 
     // pull from database
@@ -39,8 +41,11 @@ export const fetchAccessControls = async (KV: KVNamespace, DB: D1QB<Schema> | un
 
     const access = res.results.map((v) => v.prefix)
 
-    // cache for later
-    await KV.put(cacheKey, JSON.stringify(access), { expirationTtl: ttl === undefined ? seconds("1 minute") : ttl })
+    // cache for later if ttl was not zero
+    if (ttl !== 0) {
+        const expirationTtl = ttl === undefined ? seconds("5 minutes") : ttl
+        await KV.put(cacheKey, JSON.stringify(access), { expirationTtl: expirationTtl })
+    }
 
     return access
 }
@@ -53,7 +58,7 @@ export const canAccess = (access: string[], key: string): boolean => {
 
     for (const p of access) {
         // skip if it is not a valid access pattern
-        if (!p.match(/^(\/[a-zA-Z0-9\.]+)*(\/\*)?$/)) {
+        if (!p.match(/^(\/[a-zA-Z0-9.]+)*(\/\*)?$/)) {
             continue
         }
 

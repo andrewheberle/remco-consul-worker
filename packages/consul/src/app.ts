@@ -4,6 +4,7 @@ import { list } from "./list"
 import { connect } from "./db"
 import { encrypt, keyFromString } from "./protect"
 import { canAccess, fetchAccessControls } from "./access"
+import { seconds } from "itty-time"
 
 export const app = new Hono<{ Bindings: EnvBindings }>()
 
@@ -12,7 +13,6 @@ app.get("/v1/kv/:key{.+}", async (c) => {
     const recurse = c.req.query("recurse") !== undefined
 
     const kv = await list(c.env.KV, `/${key}`, recurse)
-
     if (kv.length === 0) {
         return c.notFound()
     }
@@ -35,7 +35,7 @@ app.get("/v1/kv/:key{.+}", async (c) => {
             }
 
             const qb = await connect(c.env.DB)
-            const access = await fetchAccessControls(c.env.KV, qb, cn)
+            const access = await fetchAccessControls(c.env.KV, qb, cn, c.env.CACHE_TTL !== undefined ? seconds(c.env.CACHE_TTL) : undefined)
 
             const filtered = kv.filter((v) => {
                 if (canAccess(access, v.key)) {

@@ -100,6 +100,24 @@ certificate.
     npm run cf-typegen
     ```
 
+Access controls are cached on a per user (ie based on the certificate CN value)
+using Workers KV for 5-minutes by default however this can be adjusted by
+adding the following variable to your `wrangler.jsonc` config:
+
+```jsonc
+{
+    "vars": {
+        "CACHE_TTL": "5 minutes"
+    }
+}
+```
+
+The `CACHE_TTL` is a human readable string that is converted to seconds using
+[itty-time](https://itty.dev/itty-time/) with a zero value (e.g. `0` or
+`0 minutes`) disabling caching completley.
+
+If this variable is omitted the default value of `5 minutes` is used. 
+
 ## Deployment
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fandrewheberle%2Fremco-consul-worker-template)

@@ -19,7 +19,7 @@ export class MockKVNameSpace {
             return v
         }
 
-        let res = new Map<string, string>()
+        const res = new Map<string, string>()
         for (const k of key) {
             const v = this.kv.get(k)
             if (v !== undefined) {
