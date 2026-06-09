@@ -9,11 +9,7 @@ export type Schema = {
     }
 }
 
-export const connect = async (db: D1Database | undefined): Promise<D1QB<Schema> | undefined> => {
-    if (db === undefined) {
-        return undefined
-    }
-
+export const connect = async (db: D1Database): Promise<D1QB<Schema>> => {
     const qb = new D1QB<Schema>(db)
 	const migrationBuilder = qb.migrations({ migrations })
 	await migrationBuilder.apply()

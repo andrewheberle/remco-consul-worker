@@ -1,53 +1,88 @@
-import { D1QB } from "workers-qb"
-import { Schema } from "./db"
+import { connect } from "./db"
 import { seconds } from "itty-time"
+import { EnvBindings } from "./types"
 
-export const fetchAccessControls = async (KV: KVNamespace, DB: D1QB<Schema> | undefined, user: string, ttl?: number): Promise<string[]> => {
-    // if theres no database then return full access
-    if (DB === undefined) {
-        return ["/*"]
+export class AccessController {
+    private env: EnvBindings
+    private user: string
+    private ttl: number
+    private _access?: string[]
+
+    constructor(env: EnvBindings, user: string = "*", ttl: number = seconds("5 minutes")) {
+        this.env = env
+        this.user = user
+        this.ttl = ttl
     }
 
-    // check for cached response
-    const cacheKey = `${user}:access`
-    if (ttl !== 0) {
-        const cached = await KV.get(cacheKey)
-        if (cached !== null) {
-            const access: string[] = JSON.parse(cached)
+    async canAccess(key: string): Promise<boolean> {
+        return canAccess(await this.access(), key)
+    }
 
-            return access
+    private async access(): Promise<string[]> {
+        if (this._access !== undefined) {
+            return this._access
+        }
+
+        // if theres no database then return full access
+        if (this.env.DB === undefined) {
+            this._access = ["/*"]
+
+            return this._access
+        }
+
+        // check for cached response
+        const cacheKey = `${this.user}:access`
+        if (this.ttl !== 0) {
+            const cached = await this.env.KV.get<string[]>(cacheKey, "json")
+            if (cached !== null) {
+                this._access = cached
+
+                return this._access
+            }
+        }
+
+        // pull from database
+        const qb = await connect(this.env.DB)
+        const where = this.user === "*"
+            ? { conditions: "user = '*'" }
+            : { conditions: "user = ? OR user = '*'", params: this.user }
+        const res = await qb.fetchAll({
+            tableName: "access_controls",
+            where: where,
+            fields: ["prefix"]
+        })
+            .execute()
+
+        if (!res.success) {
+            throw Error("query failed")
+        }
+
+        if (res.results === undefined) {
+            // no results is no access
+            this._access = []
+            await this.cache()
+
+            return this._access
+        }
+
+        this._access = res.results.map((v) => v.prefix)
+        await this.cache()
+
+        return this._access
+    }
+
+    private async cache() {
+        // dont cache when undefined
+        if (this._access === undefined) {
+            return
+        }
+
+        // cache for later if ttl was not zero
+        if (this.ttl !== 0) {
+            const cacheKey = `${this.user}:access`
+            await this.env.KV.put(cacheKey, JSON.stringify(this._access), { expirationTtl: this.ttl })
         }
     }
-
-    // pull from database
-    const res = await DB.fetchAll({
-        tableName: "access_controls",
-        where: {
-            conditions: "user = ? OR user = '*'",
-            params: user
-        },
-        fields: ["prefix"]
-    })
-        .execute()
-
-    if (!res.success) {
-        throw Error("query failed")
-    }
-
-    if (res.results === undefined) {
-        // no results is no access
-        return []
-    }
-
-    const access = res.results.map((v) => v.prefix)
-
-    // cache for later if ttl was not zero
-    if (ttl !== 0) {
-        const expirationTtl = ttl === undefined ? seconds("5 minutes") : ttl
-        await KV.put(cacheKey, JSON.stringify(access), { expirationTtl: expirationTtl })
-    }
-
-    return access
 }
 
 export const canAccess = (access: string[], key: string): boolean => {
@@ -98,4 +133,23 @@ export const canAccess = (access: string[], key: string): boolean => {
     }
 
     return false
+}
+
+export const userFromRequest = (req: Request<unknown, CfProperties<unknown>>): string => {
+    if (req.cf === undefined) {
+        return "*"
+    }
+
+    const auth = req.cf.tlsClientAuth as IncomingRequestCfPropertiesTLSClientAuth | IncomingRequestCfPropertiesTLSClientAuthPlaceholder
+    if (auth.certPresented === "0") {
+        return "*"
+    }
+
+    for (const v of auth.certSubjectDN.split(",")) {
+        if (v.startsWith("CN=")) {
+            return v.slice(3)
+        }
+    }
+
+    throw new Error("presented certificate did not contain a Common Name (CN)")
 }
