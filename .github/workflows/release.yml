@@ -2,7 +2,18 @@ name: Release & Publish to NPM
 
 permissions: {}
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release type
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   release:
@@ -28,6 +39,6 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm test
-      - run: npm run release:ci
+      - run: npm run release:ci:${{ inputs.release }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
