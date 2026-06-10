@@ -52,6 +52,9 @@ export class KVPair {
      * @returns The key as a string
      */
     toString() {
-        return this.value
+        const bytes = new TextEncoder().encode(this.value)
+        const binary = bytes.reduce((s, b) => s + String.fromCharCode(b), '')
+
+        return btoa(binary)
     }
 }

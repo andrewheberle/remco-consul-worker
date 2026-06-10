@@ -15,6 +15,6 @@ describe("KVPair", () => {
     })
 
     it("single item - toString", () => {
-        expect(new KVPair("foo", "bar").toString()).toBe("bar")
+        expect(new KVPair("foo", "bar").toString()).toBe(btoa("bar"))
     })
 })
