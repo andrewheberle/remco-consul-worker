@@ -1,5 +1,6 @@
+import { KVPair } from "./kvpair"
 import { logger } from "./logger"
-import { EnvBindings, KVPair } from "./types"
+import { EnvBindings } from "./types"
 
 export const list = async (env: EnvBindings, prefix: string, recurse?: boolean): Promise<KVPair[]> => {
     if (!prefix.startsWith("/")) {

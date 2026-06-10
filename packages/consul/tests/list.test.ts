@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { list } from "../src/list"
 import { makeEnv } from "./env"
-import { KVPair } from "../src/types"
+import { KVPair } from "../src/kvpair"
 
 describe("list", () => {
     it("no keys", async () => {
