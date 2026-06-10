@@ -17,34 +17,42 @@ app.get("/v1/kv/:key{.+}", async (c) => {
     l.debug(`${c.req.method} ${c.req.path}: fetching keys`)
     const kv = await list(c.env, `/${key}`, recurse)
     if (kv.length === 0) {
-        l.debug("no results found")
-        return c.notFound()
+        if (recurse === false) {
+            // no keys for a non-recursive lookup so respond with a 404
+            l.debug(`${c.req.method} ${c.req.path}: no results found`)
+            return c.notFound()
+        }
+
+        // no keys for a recursive lookup so return an empty array
+        l.debug(`${c.req.method} ${c.req.path}: empty list of keys`)
+        return c.json([])
     }
 
-    // filter based on access controls (if present)
+    // get user info from request
+    l.debug(`${c.req.method} ${c.req.path}: fethcing user data from request`)
     const user = userFromRequest(c.req.raw)
     const ttl = c.env.CACHE_TTL !== undefined ? seconds(c.env.CACHE_TTL) : undefined
     const ll = l.with("user", user, "ttl", ttl)
 
+    // filter based on access controls (if present)
     ll.debug(`${c.req.method} ${c.req.path}: filtering key list`)
-
-    /*
-    const access = new AccessController(c.env, user, ttl)
-    const filtered = kv.filter(async (v) => {
-        if (await access.canAccess(v.key)) {
-            return v
-        }
-    }) */
     const access = await fetchAccess(c.env, user, ttl)
     const filtered = kv.filter(async (v) => {
         if (canAccess(access, v.key)) {
             return v
         }
     })
+
+    // add header to let client know that ACLs have limited the results
+    if (filtered.length !== kv.length) {
+        ll.debug(`${c.req.method} ${c.req.path}: some keys were filtered based on access controls`)
+        c.header("X-Consul-Results-Filtered-By-ACLs", "true")
+    }
+
+    // return empty array if no results are left after filtering
     if (filtered.length === 0) {
         ll.debug(`${c.req.method} ${c.req.path}: no keys left after filtering`)
-
-        return c.notFound()
+        return c.json([])
     }
 
     // decrypt  any protected values if key is available/set
@@ -54,12 +62,10 @@ app.get("/v1/kv/:key{.+}", async (c) => {
         const decrypted = await Promise.all(filtered.map(v => v.decrypt(key)))
 
         ll.debug(`${c.req.method} ${c.req.path}: returning keys after filtering and decryption process`, "length", decrypted.length)
-
         return c.json(decrypted)
     }
 
     ll.debug(`${c.req.method} ${c.req.path}: returning keys after filtering process`, "length", filtered.length)
-
     return c.json(filtered)
 })
 
