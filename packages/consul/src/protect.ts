@@ -29,6 +29,11 @@ export const encrypt = async (key: CryptoKey, plaintext: string): Promise<string
 }
 
 export const decrypt = async (key: CryptoKey, stored: string): Promise<string> => {
+    if (!stored.startsWith(ProtectedPrefix))
+        throw new Error("ciphertext was missing expected prefix")
+
+    stored = stored.slice(ProtectedPrefix.length)
+
     const data = Uint8Array.from(atob(stored), (c) => c.charCodeAt(0));
 
     const iv = data.slice(0, 12)

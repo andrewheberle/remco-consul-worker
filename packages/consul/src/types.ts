@@ -27,11 +27,8 @@ export class KVPair {
             return this
         }
 
-        let v = this.value
-
-        // remove prefix then decrypt
-        v = v.slice(ProtectedPrefix.length)
-        v = await decrypt(key, v)
+        // decrypt value
+        const v = await decrypt(key, this.value)
         
         return new KVPair(this.key, v)
     }
