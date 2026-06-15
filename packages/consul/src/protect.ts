@@ -1,3 +1,5 @@
+import { EnvBindings } from "./types"
+
 export const ProtectedPrefix = "$protected$:"
 
 /**
@@ -13,7 +15,7 @@ export const keyFromString = async (s: string): Promise<CryptoKey> => {
     ])
 }
 
-export async function encrypt(key: CryptoKey, plaintext: string): Promise<string> {
+export const encrypt = async (key: CryptoKey, plaintext: string): Promise<string> => {
     const iv = crypto.getRandomValues(new Uint8Array(12))
     const encoded = new TextEncoder().encode(plaintext)
 
@@ -26,7 +28,7 @@ export async function encrypt(key: CryptoKey, plaintext: string): Promise<string
     return `${ProtectedPrefix}${btoa(String.fromCharCode(...result))}`
 }
 
-export async function decrypt(key: CryptoKey, stored: string): Promise<string> {
+export const decrypt = async (key: CryptoKey, stored: string): Promise<string> => {
     const data = Uint8Array.from(atob(stored), (c) => c.charCodeAt(0));
 
     const iv = data.slice(0, 12)
@@ -36,3 +38,24 @@ export async function decrypt(key: CryptoKey, stored: string): Promise<string> {
 
     return new TextDecoder().decode(plaintext)
 }
+
+export const protect = async (env: EnvBindings, plaintext: string): Promise<string> => {
+    if (env.KEY === undefined)
+        throw new Error("no secret key available")
+
+    const keyString = await env.KEY.get()
+    const key = await keyFromString(keyString)
+    return await encrypt(key, plaintext)
+}
+
+export const unprotect = async (env: EnvBindings, ciphertext: string): Promise<string> => {
+    if (env.KEY === undefined)
+        throw new Error("no secret key available")
+
+    if (!ciphertext.startsWith(ProtectedPrefix))
+        throw new Error("ciphertext was missing expected prefix")
+    
+    const keyString = await env.KEY.get()
+    const key = await keyFromString(keyString)
+    return await decrypt(key, ciphertext)
+} 

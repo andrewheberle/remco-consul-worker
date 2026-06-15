@@ -1,6 +1,6 @@
 import { app } from "./app"
-import { encrypt, decrypt } from "./protect"
+import { protect, unprotect } from "./protect"
 
 export type { EnvBindings } from "./types"
 
-export { app, encrypt, decrypt }
+export { app, protect, unprotect }
