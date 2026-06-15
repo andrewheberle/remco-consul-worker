@@ -1,6 +1,6 @@
 {
 	"name": "@andrewheberle/remco-consul-worker",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "A minimal Consul endpoint on Cloudflare Workers that can be used by remco",
 	"type": "module",
 	"main": "./dist/index.js",
