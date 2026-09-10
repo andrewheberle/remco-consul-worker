@@ -11,7 +11,7 @@
 	},
 	"devDependencies": {
 		"wrangler": "^4.95.0",
-		"vitest": "^4.1.7"
+		"vitest": "^5.0.0"
 	},
 	"release-it": {
 		"git": false,
